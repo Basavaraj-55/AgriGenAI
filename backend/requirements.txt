@@ -1,0 +1,43 @@
+# ==============================
+# Flask Backend
+# ==============================
+Flask
+Flask-Cors
+python-dotenv
+
+# ==============================
+# Database
+# ==============================
+pymongo
+
+# ==============================
+# Authentication
+# ==============================
+bcrypt
+PyJWT
+
+# ==============================
+# Machine Learning
+# ==============================
+numpy
+pandas
+scikit-learn
+joblib
+tensorflow
+
+# ==============================
+# Gemini AI
+# ==============================
+google-generativeai
+
+# ==============================
+# Image Processing
+# ==============================
+Pillow
+opencv-python
+pytesseract
+
+# ==============================
+# HTTP Requests
+# ==============================
+requests
