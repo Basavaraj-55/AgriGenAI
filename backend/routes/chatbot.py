@@ -4,7 +4,8 @@
 # ==========================================================
 
 from flask import Blueprint, request, jsonify
-from utils.gemini import ask_gemini
+
+from rag.pipeline.rag_pipeline import RAGPipeline
 
 # ==========================================================
 # Blueprint
@@ -14,6 +15,18 @@ chatbot_bp = Blueprint(
     "chatbot",
     __name__
 )
+
+# ==========================================================
+# Load RAG Once
+# ==========================================================
+
+print("\n====================================")
+print("🌾 Loading AgriGenAI RAG...")
+print("====================================")
+
+rag = RAGPipeline()
+
+print("✅ RAG Loaded Successfully\n")
 
 # ==========================================================
 # AI Farmer Chatbot
@@ -31,20 +44,35 @@ def chatbot():
         if not message:
 
             return jsonify({
+
                 "success": False,
+
                 "message": "Message is required."
+
             }), 400
 
-        reply = ask_gemini(message)
+        # ============================================
+        # Ask RAG
+        # ============================================
+
+        result = rag.ask(message)
 
         return jsonify({
+
             "success": True,
-            "reply": reply
+
+            "reply": result["answer"],
+
+            "documents_used": result["documents"]
+
         }), 200
 
     except Exception as error:
 
         return jsonify({
+
             "success": False,
+
             "message": str(error)
+
         }), 500

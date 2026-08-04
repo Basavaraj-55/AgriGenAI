@@ -11,7 +11,7 @@ pytesseract.pytesseract.tesseract_cmd = (
 )
 
 # ==========================================================
-# Read Soil Card Image
+# Read Image
 # ==========================================================
 
 def read_soil_card(image_path):
@@ -24,94 +24,101 @@ def read_soil_card(image_path):
 
 
 # ==========================================================
-# Extract Soil Values
+# Extract Numeric Value
 # ==========================================================
 
-def extract_soil_values(text):
+def get_value(pattern, text):
 
-    def find_value(pattern):
+    match = re.search(pattern, text, re.IGNORECASE)
 
-        match = re.search(pattern, text, re.IGNORECASE)
+    if match:
 
-        if match:
-            return match.group(1)
+        return match.group(1)
 
-        return ""
-
-    nitrogen = find_value(
-        r"Nitrogen\s*[:\-]?\s*([0-9.]+)"
-    )
-
-    phosphorus = find_value(
-        r"Phosphorus\s*[:\-]?\s*([0-9.]+)"
-    )
-
-    potassium = find_value(
-        r"Potassium\s*[:\-]?\s*([0-9.]+)"
-    )
-
-    ph = find_value(
-        r"pH\s*[:\-]?\s*([0-9.]+)"
-    )
-
-    organic_carbon = find_value(
-        r"Organic\s*Carbon\s*[:\-]?\s*([0-9.]+)"
-    )
-
-    ec = find_value(
-        r"EC\s*[:\-]?\s*([0-9.]+)"
-    )
-
-    return {
-
-        "nitrogen": nitrogen,
-        "phosphorus": phosphorus,
-        "potassium": potassium,
-        "ph": ph,
-        "organicCarbon": organic_carbon,
-        "ec": ec
-
-    }
+    return ""
 
 
 # ==========================================================
-# Analyze Soil Card
-# ==========================================================
-
-def analyze_soil_card(image_path):
-
-    try:
-
-        text = read_soil_card(image_path)
-
-        values = extract_soil_values(text)
-
-        return {
-
-            "success": True,
-            "text": text,
-            "data": values
-
-        }
-
-    except Exception as e:
-
-        return {
-
-            "success": False,
-            "error": str(e)
-
-        }
-
-
-# ==========================================================
-# Compatibility Function
-# Used by app.py
+# Extract Soil Information
 # ==========================================================
 
 def extract_soil_information(image_path):
 
-    return analyze_soil_card(image_path)
+    text = read_soil_card(image_path)
+
+    nitrogen = get_value(
+
+        r"Nitrogen\s*[:\-]?\s*([0-9.]+)",
+
+        text
+
+    )
+
+    phosphorus = get_value(
+
+        r"Phosphorus\s*[:\-]?\s*([0-9.]+)",
+
+        text
+
+    )
+
+    potassium = get_value(
+
+        r"Potassium\s*[:\-]?\s*([0-9.]+)",
+
+        text
+
+    )
+
+    ph = get_value(
+
+        r"pH\s*[:\-]?\s*([0-9.]+)",
+
+        text
+
+    )
+
+    organic_carbon = get_value(
+
+        r"Organic\s*Carbon\s*[:\-]?\s*([0-9.]+)",
+
+        text
+
+    )
+
+    ec = get_value(
+
+        r"EC\s*[:\-]?\s*([0-9.]+)",
+
+        text
+
+    )
+
+    # Default values if OCR cannot detect
+
+    return {
+
+        "nitrogen": nitrogen if nitrogen else "80",
+
+        "phosphorus": phosphorus if phosphorus else "40",
+
+        "potassium": potassium if potassium else "60",
+
+        "temperature": "28",
+
+        "humidity": "70",
+
+        "ph": ph if ph else "6.5",
+
+        "rainfall": "120",
+
+        "organicCarbon": organic_carbon,
+
+        "ec": ec,
+
+        "rawText": text
+
+    }
 
 
 # ==========================================================
@@ -120,8 +127,10 @@ def extract_soil_information(image_path):
 
 if __name__ == "__main__":
 
-    sample_image = "uploads/soil_cards/sample.jpg"
+    result = extract_soil_information(
 
-    result = analyze_soil_card(sample_image)
+        "uploads/soil_cards/sample.jpg"
+
+    )
 
     print(result)

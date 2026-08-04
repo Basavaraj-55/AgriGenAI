@@ -1,58 +1,86 @@
 # ==========================================================
 # 🌾 AgriGenAI JWT Utility
 # backend/utils/jwt.py
+# Secure JWT Token Management
 # ==========================================================
 
-import os
-import jwt
-from datetime import datetime, timedelta
-from dotenv import load_dotenv
 
-# ==========================================================
-# Load Environment Variables
-# ==========================================================
+from flask_jwt_extended import (
+    create_access_token,
+    decode_token
+)
 
-load_dotenv()
 
-SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
-if not SECRET_KEY:
-    raise ValueError("JWT_SECRET_KEY is missing in .env file")
+
 
 # ==========================================================
 # Generate JWT Token
 # ==========================================================
 
-def generate_token(user_id):
-    payload = {
-        "user_id": str(user_id),
-        "exp": datetime.utcnow() + timedelta(days=7)
-    }
 
-    token = jwt.encode(
-        payload,
-        SECRET_KEY,
-        algorithm="HS256"
+def generate_token(user):
+
+
+    token = create_access_token(
+
+        identity={
+
+            "id":
+            str(user["_id"]),
+
+
+            "email":
+            user.get(
+                "email",
+                ""
+            ),
+
+
+            "role":
+            user.get(
+                "role",
+                "user"
+            )
+
+        }
+
     )
 
+
     return token
+
+
+
+
+
+
 
 # ==========================================================
 # Verify JWT Token
 # ==========================================================
 
+
 def verify_token(token):
+
+
     try:
-        payload = jwt.decode(
-            token,
-            SECRET_KEY,
-            algorithms=["HS256"]
+
+
+        decoded = decode_token(
+
+            token
+
         )
 
-        return payload
 
-    except jwt.ExpiredSignatureError:
-        return None
+        return decoded
 
-    except jwt.InvalidTokenError:
+
+
+
+
+    except Exception:
+
+
         return None

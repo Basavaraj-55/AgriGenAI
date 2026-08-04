@@ -1,0 +1,25 @@
+{
+    "dashboard": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+    "cropRecommendation": "ಬೆಳೆ ಶಿಫಾರಸು",
+    "diseaseDetection": "ರೋಗ ಪತ್ತೆ",
+    "fertilizerRecommendation": "ರಸಗೊಬ್ಬರ ಶಿಫಾರಸು",
+    "weather": "ಹವಾಮಾನ",
+    "marketPrediction": "ಮಾರುಕಟ್ಟೆ ಮುನ್ಸೂಚನೆ",
+    "smartIrrigation": "ಸ್ಮಾರ್ಟ್ ನೀರಾವರಿ",
+    "chatbot": "ಎಐ ಚಾಟ್‌ಬಾಟ್",
+    "profile": "ಪ್ರೊಫೈಲ್",
+    "settings": "ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+    "logout": "ಲಾಗ್ ಔಟ್",
+
+    "home": "ಮುಖಪುಟ",
+    "login": "ಲಾಗಿನ್",
+    "register": "ನೋಂದಣಿ",
+
+    "submit": "ಸಲ್ಲಿಸಿ",
+    "cancel": "ರದ್ದುಮಾಡಿ",
+    "save": "ಉಳಿಸಿ",
+    "search": "ಹುಡುಕಿ",
+
+    "english": "ಇಂಗ್ಲಿಷ್",
+    "kannada": "ಕನ್ನಡ"
+}

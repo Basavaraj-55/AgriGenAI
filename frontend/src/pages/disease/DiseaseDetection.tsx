@@ -9,8 +9,12 @@ function DiseaseDetection() {
   const [recommendation, setRecommendation] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      return;
+    }
 
     const file = e.target.files[0];
 
@@ -24,28 +28,46 @@ function DiseaseDetection() {
 
   const detectDisease = async () => {
     if (!selectedFile) {
-      alert("Please select an image first.");
+      alert("Please select a leaf image.");
       return;
     }
 
     setLoading(true);
 
-    const formData = new FormData();
-    formData.append("image", selectedFile);
-
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/disease", {
-        method: "POST",
-        body: formData,
-      });
+      const formData = new FormData();
+      formData.append("image", selectedFile);
+
+      const response = await fetch(
+        "http://127.0.0.1:5000/api/disease-detection",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+
+        alert(error.message || "Prediction Failed");
+
+        setLoading(false);
+        return;
+      }
 
       const data = await response.json();
 
-      setDisease(data.disease);
-      setConfidence(data.confidence + "%");
-      setRecommendation(data.recommendation);
+      if (data.success) {
+        setDisease(data.disease);
+        setConfidence(data.confidence + "%");
+        setRecommendation(data.recommendation);
+      } else {
+        alert(data.message);
+      }
     } catch (error) {
-      alert("Prediction Failed!");
+      console.error(error);
+
+      alert("Unable to connect to Flask Backend.");
     }
 
     setLoading(false);
@@ -53,17 +75,17 @@ function DiseaseDetection() {
 
   return (
     <MainLayout>
-      <div className="bg-white rounded-xl shadow-lg p-8">
+      <div className="rounded-xl bg-white p-8 shadow-lg">
 
-        <h1 className="text-3xl font-bold text-green-700 mb-3">
+        <h1 className="mb-3 text-3xl font-bold text-green-700">
           🍃 Disease Detection
         </h1>
 
-        <p className="text-gray-600 mb-8">
-          Upload a potato leaf image to detect diseases using AI.
+        <p className="mb-8 text-gray-600">
+          Upload a potato leaf image and detect diseases using Artificial Intelligence.
         </p>
 
-        <div className="border-2 border-dashed border-green-400 rounded-xl p-8 text-center">
+        <div className="rounded-xl border-2 border-dashed border-green-400 p-8 text-center">
 
           <input
             type="file"
@@ -73,58 +95,56 @@ function DiseaseDetection() {
 
           {preview && (
             <div className="mt-6">
+
               <img
                 src={preview}
                 alt="Leaf Preview"
-                className="mx-auto rounded-lg shadow-lg"
-                style={{
-                  width: "300px",
-                  height: "300px",
-                  objectFit: "cover",
-                }}
+                className="mx-auto h-72 w-72 rounded-xl object-cover shadow-lg"
               />
+
             </div>
           )}
 
           <button
             onClick={detectDisease}
-            className="mt-8 bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700"
+            disabled={loading}
+            className="mt-8 rounded-lg bg-green-600 px-8 py-3 text-white transition hover:bg-green-700 disabled:bg-gray-400"
           >
-            Detect Disease
+            {loading ? "Predicting..." : "Detect Disease"}
           </button>
 
         </div>
 
-        {loading && (
-          <div className="mt-8">
-            <h2 className="text-xl font-bold text-blue-600">
-              Predicting...
-            </h2>
-          </div>
-        )}
-
         {disease && (
-          <div className="mt-8 bg-green-100 rounded-xl p-6">
+          <div className="mt-8 rounded-xl bg-green-100 p-6">
 
             <h2 className="text-2xl font-bold text-green-700">
               Prediction Result
             </h2>
 
-            <p className="mt-4 text-xl">
-              <b>Disease:</b> {disease}
-            </p>
+            <div className="mt-5 space-y-3">
 
-            <p className="mt-2 text-xl">
-              <b>Confidence:</b> {confidence}
-            </p>
+              <p className="text-lg">
+                <strong>Disease:</strong> {disease}
+              </p>
 
-            <p className="mt-2 text-xl">
-              <b>Recommendation:</b>
-            </p>
+              <p className="text-lg">
+                <strong>Confidence:</strong> {confidence}
+              </p>
 
-            <p className="text-lg mt-2">
-              {recommendation}
-            </p>
+              <div>
+
+                <h3 className="font-semibold text-green-700">
+                  Recommendation
+                </h3>
+
+                <p className="mt-2 text-gray-700">
+                  {recommendation}
+                </p>
+
+              </div>
+
+            </div>
 
           </div>
         )}

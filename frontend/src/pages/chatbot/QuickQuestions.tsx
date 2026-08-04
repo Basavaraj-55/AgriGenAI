@@ -1,60 +1,120 @@
 interface QuickQuestionsProps {
-
   onSelect: (question: string) => void;
-
 }
 
 function QuickQuestions({
-
   onSelect,
-
 }: QuickQuestionsProps) {
 
   const questions = [
-
-    "🌾 Which crop is best for my farm?",
-
-    "💧 Should I irrigate today?",
-
-    "🌿 Which fertilizer should I use?",
-
-    "🐛 My crop has a disease. What should I do?",
-
-    "🌦 How is today's weather for farming?",
-
-    "📈 Should I sell my crop now?",
-
-    "🌱 How can I improve soil fertility?",
-
-    "🚜 Give me modern farming tips."
-
+    {
+      icon: "🌾",
+      title: "Best Crop",
+      question: "Which crop is best for my farm?",
+    },
+    {
+      icon: "💧",
+      title: "Irrigation",
+      question: "Should I irrigate today?",
+    },
+    {
+      icon: "🌿",
+      title: "Fertilizer",
+      question: "Which fertilizer should I use?",
+    },
+    {
+      icon: "🐛",
+      title: "Disease",
+      question: "My crop has a disease. What should I do?",
+    },
+    {
+      icon: "🌦",
+      title: "Weather",
+      question: "How is today's weather for farming?",
+    },
+    {
+      icon: "📈",
+      title: "Market",
+      question: "Should I sell my crop now?",
+    },
+    {
+      icon: "🌱",
+      title: "Soil",
+      question: "How can I improve soil fertility?",
+    },
+    {
+      icon: "🚜",
+      title: "Modern Farming",
+      question: "Give me modern farming tips.",
+    },
   ];
 
   return (
+    <div className="bg-[#0F172A] px-6 py-6">
 
-    <div className="border-b bg-green-50 p-5">
+      {/* Header */}
 
-      <h3 className="mb-4 text-lg font-bold text-green-700">
+      <div className="flex items-center justify-between mb-5">
 
-        ⚡ Quick Questions
+        <div>
 
-      </h3>
+          <h2 className="text-xl font-bold text-white">
+            ⚡ Quick Questions
+          </h2>
 
-      <div className="flex flex-wrap gap-3">
+          <p className="text-gray-400 text-sm mt-1">
+            Ask common farming questions instantly.
+          </p>
 
-        {questions.map((question, index) => (
+        </div>
+
+      </div>
+
+      {/* Question Chips */}
+
+      <div className="flex flex-wrap gap-4">
+
+        {questions.map((item, index) => (
 
           <button
-
             key={index}
-
-            onClick={() => onSelect(question)}
-
-            className="rounded-full border border-green-300 bg-white px-4 py-2 text-sm font-medium text-green-700 transition hover:bg-green-600 hover:text-white"
-
+            onClick={() => onSelect(item.question)}
+            className="
+              group
+              flex
+              items-center
+              gap-3
+              rounded-2xl
+              border
+              border-[#334155]
+              bg-[#1E293B]
+              px-5
+              py-3
+              transition-all
+              duration-300
+              hover:border-green-500
+              hover:bg-green-600
+              hover:scale-105
+              hover:shadow-lg
+              hover:shadow-green-500/30
+            "
           >
 
-            {question}
+            <span className="text-2xl">
+              {item.icon}
+            </span>
+
+            <div className="text-left">
+
+              <p className="font-semibold text-white text-sm">
+                {item.title}
+              </p>
+
+              <p className="text-xs text-gray-400 group-hover:text-white">
+                Click to ask
+              </p>
+
+            </div>
 
           </button>
 
@@ -63,9 +123,7 @@ function QuickQuestions({
       </div>
 
     </div>
-
   );
-
 }
 
 export default QuickQuestions;

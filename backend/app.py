@@ -7,6 +7,9 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
+from flask_jwt_extended import JWTManager
+from utils.bcrypt import init_bcrypt
+
 # Environment
 import os
 from dotenv import load_dotenv
@@ -32,9 +35,24 @@ from PIL import Image
 import traceback
 from werkzeug.utils import secure_filename
 
+
 # Blueprints
 from routes.auth import auth_bp
 from routes.chatbot import chatbot_bp
+from routes.news import news_bp
+from routes.schemes import schemes_bp
+from routes.voice import voice_bp
+
+from routes.products import products_bp
+from routes.cart import cart_bp
+from routes.orders import orders_bp
+from routes.reviews import reviews_bp
+from routes.notifications import notifications_bp
+
+from routes.admin_routes import admin_bp
+
+from routes.setup import setup_bp
+
 
 # Helper Functions
 from utils.soil_reader import extract_soil_information
@@ -52,6 +70,11 @@ load_dotenv()
 # ============================================================
 
 app = Flask(__name__)
+
+# ============================================================
+# JWT & Bcrypt Initialization
+# ============================================================
+
 
 # ============================================================
 # CORS Configuration
@@ -73,11 +96,77 @@ CORS(
 
 app.register_blueprint(
     auth_bp,
-    url_prefix="/api"
+    url_prefix="/api/auth"
 )
 
 app.register_blueprint(
     chatbot_bp,
+    url_prefix="/api"
+)
+
+app.register_blueprint(
+    news_bp,
+    url_prefix="/api"
+)
+
+app.register_blueprint(
+    schemes_bp,
+    url_prefix="/api"
+)
+
+# ============================================================
+# Voice Assistant Blueprint
+# ============================================================
+
+app.register_blueprint(
+    voice_bp,
+    url_prefix="/api"
+)
+
+# ============================================================
+# Marketplace Module
+# ============================================================
+
+app.register_blueprint(
+    products_bp,
+    url_prefix="/api"
+)
+
+app.register_blueprint(
+    cart_bp,
+    url_prefix="/api"
+)
+
+app.register_blueprint(
+    orders_bp,
+    url_prefix="/api"
+)
+
+app.register_blueprint(
+    reviews_bp,
+    url_prefix="/api"
+)
+
+app.register_blueprint(
+    notifications_bp,
+    url_prefix="/api"
+)
+
+# ============================================================
+# Admin Module
+# ============================================================
+
+app.register_blueprint(
+    admin_bp,
+    url_prefix="/api/admin"
+)
+
+# ============================================================
+# Initial Setup
+# ============================================================
+
+app.register_blueprint(
+    setup_bp,
     url_prefix="/api"
 )
 
@@ -97,8 +186,20 @@ MONGO_URI = os.getenv("MONGO_URI")
 
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")  
 
+# ============================================================
+# JWT & Bcrypt Initialization
+# ============================================================
+
+app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
+
+# JWT Token Expiry
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=7)
+
+jwt = JWTManager(app)
+
+init_bcrypt(app)
 # ============================================================
 
 # ============================================================
@@ -259,10 +360,7 @@ SOIL_ENCODER_PATH = os.path.join(
     "soil_encoder.pkl"
 )
 
-LABEL_ENCODER_PATH = os.path.join(
-    MODEL_DIR,
-    "label_encoder.pkl"
-)
+
 
 # ============================================================
 # Check Model Files
@@ -286,7 +384,6 @@ MODEL_FILES = [
 
     SOIL_ENCODER_PATH,
 
-    LABEL_ENCODER_PATH
 
 ]
 
@@ -297,16 +394,43 @@ for file in MODEL_FILES:
         print(f"⚠ Model Not Found: {file}")
         # ============================================================
 # 🌾 AgriGenAI Backend v3.0
-# Part 4 - Load AI Models
 # ============================================================
+# 🌾 Part 4 - Load AI Models
+# ============================================================
+
+print("\n======================================")
+print("🚀 Loading AI Models...")
+print("======================================")
+
+# Global Variables
+potato_model = None
+crop_model = None
+crop_encoder = None
+fertilizer_model = None
+fertilizer_encoder = None
+market_model = None
+market_encoders = None
+soil_encoder = None
+
+# Potato Disease Classes
+CLASS_NAMES = [
+    "Early Blight",
+    "Late Blight",
+    "Healthy"
+]
 
 try:
 
-    print("🚀 Loading AI Models...")
+    # ========================================================
+    # Potato Disease Model
+    # ========================================================
 
-    # ========================================================
-    # Potato Disease Detection Model
-    # ========================================================
+    print("📌 Loading Potato Disease Model...")
+
+    if not os.path.exists(POTATO_MODEL_PATH):
+        raise FileNotFoundError(
+            f"Potato model not found:\n{POTATO_MODEL_PATH}"
+        )
 
     potato_model = tf.keras.models.load_model(
         POTATO_MODEL_PATH
@@ -317,6 +441,8 @@ try:
     # ========================================================
     # Crop Recommendation Model
     # ========================================================
+
+    print("📌 Loading Crop Recommendation Model...")
 
     crop_model = joblib.load(
         CROP_MODEL_PATH
@@ -332,6 +458,8 @@ try:
     # Fertilizer Recommendation Model
     # ========================================================
 
+    print("📌 Loading Fertilizer Recommendation Model...")
+
     fertilizer_model = joblib.load(
         FERTILIZER_MODEL_PATH
     )
@@ -346,6 +474,8 @@ try:
     # Market Prediction Model
     # ========================================================
 
+    print("📌 Loading Market Prediction Model...")
+
     market_model = joblib.load(
         MARKET_MODEL_PATH
     )
@@ -357,18 +487,10 @@ try:
     print("✅ Market Prediction Model Loaded")
 
     # ========================================================
-    # Disease Label Encoder
-    # ========================================================
-
-    label_encoder = joblib.load(
-        LABEL_ENCODER_PATH
-    )
-
-    print("✅ Disease Label Encoder Loaded")
-
-    # ========================================================
     # Soil Encoder
     # ========================================================
+
+    print("📌 Loading Soil Encoder...")
 
     soil_encoder = joblib.load(
         SOIL_ENCODER_PATH
@@ -376,15 +498,18 @@ try:
 
     print("✅ Soil Encoder Loaded")
 
-    print("🎉 All AI Models Loaded Successfully")
+    print("\n======================================")
+    print("🎉 ALL AI MODELS LOADED SUCCESSFULLY")
+    print("======================================")
 
 except Exception as error:
 
-    print("❌ Error Loading AI Models")
-
-    print(error)
-
+    print("\n======================================")
+    print("❌ AI MODEL LOADING FAILED")
+    print("======================================")
     traceback.print_exc()
+
+    raise
     # ============================================================
 # 🌾 AgriGenAI Backend v3.0
 # Part 5 - Helper Functions
@@ -533,6 +658,11 @@ def home():
 # Health Check API
 # ============================================================
 
+
+# ============================================================
+# Health Check API
+# ============================================================
+
 @app.route("/api/health", methods=["GET"])
 def health_check():
 
@@ -572,7 +702,7 @@ def model_status():
 
         "market_model": market_model is not None,
 
-        "label_encoder": label_encoder is not None,
+      "potato_classes": len(CLASS_NAMES),
 
         "soil_encoder": soil_encoder is not None
 
@@ -974,8 +1104,8 @@ def smart_irrigation():
             "message": str(error)
 
         }), 500
-    # ============================================================
-# 🌾 Part 10 - Potato Disease Detection API
+       # ============================================================
+# 🌾 Part 10 - Disease Detection API
 # ============================================================
 
 @app.route("/api/disease-detection", methods=["POST"])
@@ -983,114 +1113,107 @@ def disease_detection():
 
     try:
 
-        # ====================================================
-        # Check Image
-        # ====================================================
+        # ----------------------------------------------------
+        # Check whether AI model is loaded
+        # ----------------------------------------------------
+
+        if potato_model is None:
+            return jsonify({
+                "success": False,
+                "message": "Disease Detection Model is not loaded."
+            }), 500
+
+        # ----------------------------------------------------
+        # Validate uploaded image
+        # ----------------------------------------------------
 
         if "image" not in request.files:
-
             return jsonify({
-
                 "success": False,
-
                 "message": "No image uploaded."
-
             }), 400
 
-        file = request.files["image"]
+        image = request.files["image"]
 
-        if file.filename == "":
-
+        if image.filename == "":
             return jsonify({
-
                 "success": False,
-
                 "message": "Please select an image."
-
             }), 400
 
-        if not allowed_image(file.filename):
+        # ----------------------------------------------------
+        # Save uploaded image
+        # ----------------------------------------------------
 
-            return jsonify({
-
-                "success": False,
-
-                "message": "Only JPG, JPEG and PNG files are allowed."
-
-            }), 400
-
-        # ====================================================
-        # Save Image
-        # ====================================================
-
-        image_path = save_uploaded_file(
-
-            file,
-
+        filepath = save_uploaded_file(
+            image,
             DISEASE_FOLDER
-
         )
 
-        # ====================================================
-        # Preprocess Image
-        # ====================================================
+        # ----------------------------------------------------
+        # Preprocess image
+        # ----------------------------------------------------
 
-        image = preprocess_disease_image(
+        processed_image = preprocess_disease_image(filepath)
 
-            image_path
+        # ----------------------------------------------------
+        # Predict disease
+        # ----------------------------------------------------
 
+        prediction = potato_model.predict(processed_image)
+
+        predicted_class = np.argmax(prediction)
+
+        confidence = float(np.max(prediction) * 100)
+
+        disease = CLASS_NAMES[predicted_class]
+
+        # ----------------------------------------------------
+        # Disease Recommendations
+        # ----------------------------------------------------
+
+        recommendations = {
+
+            "Healthy": {
+                "symptoms": "No disease detected.",
+                "cause": "Healthy crop.",
+                "treatment": "No treatment required.",
+                "prevention": "Continue regular crop care.",
+                "recommendation": "Maintain irrigation and balanced fertilizer."
+            },
+
+            "Early Blight": {
+                "symptoms": "Brown spots with concentric rings on leaves.",
+                "cause": "Alternaria solani fungus.",
+                "treatment": "Spray Mancozeb fungicide.",
+                "prevention": "Use disease-free seeds and crop rotation.",
+                "recommendation": "Remove infected leaves immediately."
+            },
+
+            "Late Blight": {
+                "symptoms": "Dark brown patches with white fungal growth.",
+                "cause": "Phytophthora infestans fungus.",
+                "treatment": "Spray Metalaxyl fungicide.",
+                "prevention": "Avoid excessive moisture and improve drainage.",
+                "recommendation": "Remove infected plants immediately."
+            }
+
+        }
+
+        result = recommendations.get(
+            disease,
+            {
+                "symptoms": "",
+                "cause": "",
+                "treatment": "",
+                "prevention": "",
+                "recommendation": "Consult an agriculture expert."
+            }
         )
 
-        # ====================================================
-        # AI Prediction
-        # ====================================================
-
-        prediction = potato_model.predict(image)
-
-        predicted_index = np.argmax(prediction)
-
-        confidence = float(
-
-            np.max(prediction) * 100
-
-        )
-
-        disease = label_encoder.inverse_transform(
-
-            [predicted_index]
-
-        )[0]
-
-        # ====================================================
-        # Disease Recommendation
-        # ====================================================
-
-        recommendation = ""
-
-        if disease == "Early Blight":
-
-            recommendation = (
-                "Apply Mancozeb or Chlorothalonil fungicide. "
-                "Remove infected leaves."
-            )
-
-        elif disease == "Late Blight":
-
-            recommendation = (
-                "Apply Metalaxyl-based fungicide immediately "
-                "and avoid excessive irrigation."
-            )
-
-        else:
-
-            recommendation = (
-                "Healthy leaf detected. "
-                "No disease found."
-            )
-
-        # ====================================================
+        # ----------------------------------------------------
         # Success Response
-        # ====================================================
+        # ----------------------------------------------------
 
         return jsonify({
 
@@ -1100,7 +1223,88 @@ def disease_detection():
 
             "confidence": round(confidence, 2),
 
-            "recommendation": recommendation
+            "symptoms": result["symptoms"],
+
+            "cause": result["cause"],
+
+            "treatment": result["treatment"],
+
+            "prevention": result["prevention"],
+
+            "recommendation": result["recommendation"]
+
+        })
+
+    except Exception as error:
+
+        traceback.print_exc()
+
+        return jsonify({
+
+            "success": False,
+
+            "message": str(error)
+
+        }), 500
+   # ============================================================
+# 🌾 Part 11 - Soil Health Card OCR API
+# ============================================================
+
+@app.route("/api/soil-card", methods=["POST"])
+def upload_soil_card():
+
+    try:
+
+        if "file" not in request.files:
+
+            return jsonify({
+
+                "success": False,
+
+                "message": "No file uploaded."
+
+            }), 400
+
+        file = request.files["file"]
+
+        if file.filename == "":
+
+            return jsonify({
+
+                "success": False,
+
+                "message": "Please select a file."
+
+            }), 400
+
+        filepath = save_uploaded_file(
+
+            file,
+
+            SOIL_FOLDER
+
+        )
+
+        # Read Soil Health Card
+        soil_data = extract_soil_information(filepath)
+
+        return jsonify({
+
+            "success": True,
+
+            "nitrogen": soil_data.get("nitrogen", ""),
+
+            "phosphorus": soil_data.get("phosphorus", ""),
+
+            "potassium": soil_data.get("potassium", ""),
+
+            "temperature": soil_data.get("temperature", ""),
+
+            "humidity": soil_data.get("humidity", ""),
+
+            "ph": soil_data.get("ph", ""),
+
+            "rainfall": soil_data.get("rainfall", "")
 
         })
 
@@ -1134,6 +1338,7 @@ def market_prediction():
         state = data.get("state")
         district = data.get("district")
         quantity = float(data.get("quantity", 0))
+        
         selling_time = data.get("sellingTime")
 
         # ====================================================

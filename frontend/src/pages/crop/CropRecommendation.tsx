@@ -1,301 +1,174 @@
 import { useState } from "react";
+
 import MainLayout from "../../components/layout/MainLayout";
 
+import HeroSection from "./HeroSection";
 import CropForm from "./CropForm";
 import SoilUpload from "./SoilUpload";
 import CropResult from "./CropResult";
 
-function CropRecommendation() {
-
-  // ----------------------------------
-  // Input Method
-  // ----------------------------------
-
-  const [inputMethod, setInputMethod] = useState<
-    "manual" | "upload"
-  >("manual");
-
-  // ----------------------------------
-  // Form Data
-  // ----------------------------------
+export default function CropRecommendation() {
+  const [inputMethod, setInputMethod] = useState<"manual" | "upload">(
+    "manual"
+  );
 
   const [formData, setFormData] = useState({
-
     nitrogen: "",
-
     phosphorus: "",
-
     potassium: "",
-
     temperature: "",
-
     humidity: "",
-
     ph: "",
-
-    rainfall: ""
-
+    rainfall: "",
   });
 
-  // ----------------------------------
-  // Result
-  // ----------------------------------
-
-  const [recommendedCrop, setRecommendedCrop] =
-    useState("");
-
-  const [confidence, setConfidence] =
-    useState("");
-
-  const [loading, setLoading] =
-    useState(false);
-
-  // ----------------------------------
-  // Soil Card Callback
-  // ----------------------------------
+  const [recommendedCrop, setRecommendedCrop] = useState("");
+  const [confidence, setConfidence] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSoilData = (data: any) => {
-
     setFormData({
-
       nitrogen: data.nitrogen,
-
       phosphorus: data.phosphorus,
-
       potassium: data.potassium,
-
       temperature: data.temperature,
-
       humidity: data.humidity,
-
       ph: data.ph,
-
       rainfall: data.rainfall,
-
     });
 
     setInputMethod("manual");
-
   };
-
-  // ----------------------------------
-  // Input Change
-  // ----------------------------------
 
   const handleChange = (
-
     e: React.ChangeEvent<HTMLInputElement>
-
   ) => {
-
-    setFormData({
-
-      ...formData,
-
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-
-    });
-
+    }));
   };
-    // ----------------------------------
-  // Predict Crop
-  // ----------------------------------
 
   const predictCrop = async () => {
-
     const {
-
       nitrogen,
-
       phosphorus,
-
       potassium,
-
       temperature,
-
       humidity,
-
       ph,
-
       rainfall,
-
     } = formData;
 
     if (
-
       !nitrogen ||
-
       !phosphorus ||
-
       !potassium ||
-
       !temperature ||
-
       !humidity ||
-
       !ph ||
-
       !rainfall
-
     ) {
-
       alert("Please fill all fields.");
-
       return;
-
     }
 
     setLoading(true);
 
     try {
-
-      // We will connect this
-      // to cropApi.ts in the next step
-
       setTimeout(() => {
-
         setRecommendedCrop("Rice");
-
         setConfidence("98%");
-
         setLoading(false);
-
       }, 1500);
-
-    }
-
-    catch (error) {
-
+    } catch (error) {
       console.error(error);
-
-      alert("Prediction failed.");
-
       setLoading(false);
-
     }
-
   };
 
-  // ----------------------------------
-  // UI
-  // ----------------------------------
-
   return (
-
     <MainLayout>
+      <main className="w-full px-6 py-6 lg:px-8">
 
-      <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg p-8">
+        <div className="space-y-8">
 
-        <h1 className="text-4xl font-bold text-green-700 mb-3">
+          {/* Hero Section */}
+          <HeroSection />
 
-          🌾 AI Crop Recommendation
+          {/* Main Card */}
+          <section className="rounded-3xl bg-white p-8 shadow-lg">
 
-        </h1>
+            <div className="mb-8">
 
-        <p className="text-gray-600 mb-8">
+              <h1 className="text-4xl font-bold text-green-700">
+                🌾 AI Crop Recommendation
+              </h1>
 
-          Choose how you would like to provide your soil information.
+              <p className="mt-2 text-gray-600">
+                Choose how you would like to provide your soil information.
+              </p>
 
-        </p>
+            </div>
 
-        {/* Input Method */}
+            {/* Input Method */}
+            <div className="mb-8 rounded-2xl bg-green-50 p-6">
 
-        <div className="bg-green-50 rounded-xl p-6 mb-8">
+              <h2 className="mb-4 text-xl font-semibold">
+                Input Method
+              </h2>
 
-          <h2 className="text-xl font-semibold mb-4">
+              <div className="flex flex-col gap-4 md:flex-row">
 
-            Input Method
+                <label className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    checked={inputMethod === "manual"}
+                    onChange={() => setInputMethod("manual")}
+                  />
+                  Manual Input
+                </label>
 
-          </h2>
+                <label className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    checked={inputMethod === "upload"}
+                    onChange={() => setInputMethod("upload")}
+                  />
+                  Upload Soil Health Card
+                </label>
 
-          <div className="flex flex-col md:flex-row gap-6">
+              </div>
 
-            <label className="flex items-center gap-3">
+            </div>
 
-              <input
-
-                type="radio"
-
-                checked={inputMethod === "manual"}
-
-                onChange={() => setInputMethod("manual")}
-
+            {inputMethod === "manual" ? (
+              <CropForm
+                formData={formData}
+                handleChange={handleChange}
+                predictCrop={predictCrop}
+                loading={loading}
               />
-
-              Enter Soil Values Manually
-
-            </label>
-
-            <label className="flex items-center gap-3">
-
-              <input
-
-                type="radio"
-
-                checked={inputMethod === "upload"}
-
-                onChange={() => setInputMethod("upload")}
-
+            ) : (
+              <SoilUpload
+                onSoilData={handleSoilData}
               />
+            )}
 
-              Upload Soil Health Card
+            {recommendedCrop && (
+              <div className="mt-8">
+                <CropResult
+                  crop={recommendedCrop}
+                  confidence={confidence}
+                />
+              </div>
+            )}
 
-            </label>
-
-          </div>
+          </section>
 
         </div>
 
-        {/* Manual Form */}
-
-        {inputMethod === "manual" && (
-
-          <CropForm
-
-            formData={formData}
-
-            handleChange={handleChange}
-
-            predictCrop={predictCrop}
-
-            loading={loading}
-
-          />
-
-        )}
-
-        {/* Upload */}
-
-        {inputMethod === "upload" && (
-
-          <SoilUpload
-
-            onSoilData={handleSoilData}
-
-          />
-
-        )}
-
-        {/* Result */}
-
-        {recommendedCrop && (
-
-          <CropResult
-
-            crop={recommendedCrop}
-
-            confidence={confidence}
-
-          />
-
-        )}
-
-      </div>
-
+      </main>
     </MainLayout>
-
   );
-
 }
-
-export default CropRecommendation;

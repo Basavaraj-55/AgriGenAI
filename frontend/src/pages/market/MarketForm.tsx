@@ -1,3 +1,30 @@
+// ======================================================
+// 🌾 AgriGenAI
+// AI Market Analysis Form
+// ======================================================
+
+import {
+
+  FiMapPin,
+
+  FiCalendar,
+
+  FiPackage,
+
+  FiTrendingUp,
+
+  FiActivity,
+
+  FiBarChart2,
+
+} from "react-icons/fi";
+
+import { GiWheat } from "react-icons/gi";
+
+// ======================================================
+// Props
+// ======================================================
+
 interface MarketFormProps {
 
   formData: {
@@ -19,9 +46,15 @@ interface MarketFormProps {
   districts: string[];
 
   handleChange: (
+
     e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement
+
+      HTMLInputElement |
+
+      HTMLSelectElement
+
     >
+
   ) => void;
 
   analyzeMarket: () => void;
@@ -30,7 +63,11 @@ interface MarketFormProps {
 
 }
 
-function MarketForm({
+// ======================================================
+// Component
+// ======================================================
+
+export default function MarketForm({
 
   formData,
 
@@ -48,266 +85,756 @@ function MarketForm({
 
   return (
 
-    <div className="bg-white rounded-2xl shadow-lg p-8">
+    <div className="space-y-8">
 
-      <h2 className="text-3xl font-bold text-green-700 mb-2">
+      {/* =======================================
+          AI Hero
+      ======================================= */}
 
-        📈 AI Market Analysis
+      <div className="overflow-hidden rounded-3xl bg-gradient-to-r from-green-700 via-green-600 to-emerald-500 text-white shadow-2xl">
 
-      </h2>
+        <div className="grid grid-cols-1 gap-8 p-10 lg:grid-cols-2">
 
-      <p className="text-gray-600 mb-8">
+          <div>
 
-        Select crop details to receive an AI-powered market forecast.
+            <span className="inline-flex rounded-full bg-white/20 px-4 py-2 text-sm font-semibold">
 
-      </p>
+              🤖 AI Powered Prediction
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            </span>
 
-        {/* Crop */}
+            <h1 className="mt-6 text-4xl font-extrabold">
 
-        <div>
+              AI Market Intelligence
 
-          <label className="block font-semibold mb-2">
+            </h1>
 
-            🌾 Crop
+            <p className="mt-4 max-w-xl text-green-100 leading-7">
 
-          </label>
+              Predict future crop prices using
+              Artificial Intelligence, historical
+              market trends and regional demand.
 
-          <select
+            </p>
 
-            name="crop"
+          </div>
 
-            value={formData.crop}
+          <div className="grid grid-cols-3 gap-4">
 
-            onChange={handleChange}
+            <div className="rounded-2xl bg-white/10 p-5 backdrop-blur">
 
-            className="w-full border rounded-lg p-3"
+              <FiTrendingUp
 
-          >
+                size={34}
 
-            <option value="">Select Crop</option>
+                className="mb-3"
 
-            <option>Rice</option>
+              />
 
-            <option>Wheat</option>
+              <h2 className="text-3xl font-bold">
 
-            <option>Maize</option>
+                95%
 
-            <option>Cotton</option>
+              </h2>
 
-            <option>Sugarcane</option>
+              <p className="text-sm text-green-100">
 
-            <option>Tomato</option>
+                Accuracy
 
-            <option>Potato</option>
+              </p>
 
-            <option>Onion</option>
+            </div>
 
-            <option>Banana</option>
+            <div className="rounded-2xl bg-white/10 p-5 backdrop-blur">
 
-          </select>
+              <FiBarChart2
 
-        </div>
+                size={34}
 
-        {/* State */}
+                className="mb-3"
 
-        <div>
+              />
 
-          <label className="block font-semibold mb-2">
+              <h2 className="text-3xl font-bold">
 
-            📍 State
+                Live
 
-          </label>
+              </h2>
 
-          <select
+              <p className="text-sm text-green-100">
 
-            name="state"
+                Market Data
 
-            value={formData.state}
+              </p>
 
-            onChange={handleChange}
+            </div>
 
-            className="w-full border rounded-lg p-3"
+            <div className="rounded-2xl bg-white/10 p-5 backdrop-blur">
 
-          >
+              <FiActivity
 
-            <option value="">Select State</option>
+                size={34}
 
-            {states.map((state) => (
+                className="mb-3"
 
-              <option key={state} value={state}>
+              />
 
-                {state}
+              <h2 className="text-3xl font-bold">
 
-              </option>
+                AI
 
-            ))}
+              </h2>
 
-          </select>
+              <p className="text-sm text-green-100">
 
-        </div>
+                Insights
 
-        {/* District */}
+              </p>
 
-        <div>
+            </div>
 
-          <label className="block font-semibold mb-2">
-
-            🏙 District
-
-          </label>
-
-          <select
-
-            name="district"
-
-            value={formData.district}
-
-            onChange={handleChange}
-
-            className="w-full border rounded-lg p-3"
-
-          >
-
-            <option value="">Select District</option>
-
-            {districts.map((district) => (
-
-              <option key={district} value={district}>
-
-                {district}
-
-              </option>
-
-            ))}
-
-          </select>
-
-        </div>
-
-        {/* Quantity */}
-
-        <div>
-
-          <label className="block font-semibold mb-2">
-
-            ⚖ Quantity (Quintals)
-
-          </label>
-
-          <input
-
-            type="number"
-
-            name="quantity"
-
-            value={formData.quantity}
-
-            onChange={handleChange}
-
-            placeholder="Enter Quantity"
-
-            className="w-full border rounded-lg p-3"
-
-          />
-
-        </div>
-                {/* Selling Time */}
-
-        <div>
-
-          <label className="block font-semibold mb-2">
-
-            📅 Expected Selling Time
-
-          </label>
-
-          <select
-
-            name="sellingTime"
-
-            value={formData.sellingTime}
-
-            onChange={handleChange}
-
-            className="w-full border rounded-lg p-3"
-
-          >
-
-            <option value="">Select Selling Time</option>
-
-            <option>Today</option>
-
-            <option>Tomorrow</option>
-
-            <option>Next Week</option>
-
-            <option>Next Month</option>
-
-          </select>
+          </div>
 
         </div>
 
       </div>
 
-      {/* AI Information */}
+      {/* =======================================
+          Prediction Form
+      ======================================= */}
 
-      <div className="mt-8 rounded-xl bg-green-50 border-l-4 border-green-600 p-6">
+      <div className="rounded-3xl bg-white p-8 shadow-xl">
 
-        <h3 className="text-xl font-bold text-green-700 mb-4">
+        <div className="mb-8">
 
-          🤖 AI Smart Market Intelligence
+          <h2 className="text-3xl font-bold text-gray-800">
 
-        </h3>
+            🌾 Crop Market Analysis
 
-        <ul className="space-y-2 text-gray-700">
+          </h2>
 
-          <li>✔ Predicts future crop prices.</li>
+          <p className="mt-2 text-gray-500">
 
-          <li>✔ Recommends whether to Sell Now or Wait.</li>
+            Enter your crop information to receive
+            AI-powered market predictions and
+            selling recommendations.
 
-          <li>✔ Estimates expected extra profit.</li>
+          </p>
 
-          <li>✔ Analyzes weather impact on prices.</li>
+        </div>
 
-          <li>✔ Calculates AI confidence score.</li>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {/* =======================================
+              Crop
+          ======================================= */}
 
-          <li>✔ Provides reasons behind the recommendation.</li>
+          <div>
 
-        </ul>
+            <label className="mb-2 flex items-center gap-2 font-semibold text-gray-700">
 
-      </div>
+              <GiWheat className="text-green-600" />
 
-      {/* Analyze Button */}
+              Crop
 
-      <div className="mt-8">
+            </label>
 
-        <button
+            <select
 
-          onClick={analyzeMarket}
+              name="crop"
 
-          disabled={loading}
+              value={formData.crop}
 
-          className="w-full rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 py-4 text-lg font-bold text-white transition hover:from-green-700 hover:to-emerald-600 disabled:opacity-60"
+              onChange={handleChange}
 
-        >
+              className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 shadow-sm transition-all duration-300 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100"
 
-          {
+            >
 
-            loading
+              <option value="">
 
-            ?
+                Select Crop
 
-            "🤖 AI Analyzing Market..."
+              </option>
 
-            :
+              <option value="Rice">
 
-            "📈 Analyze Market"
+                🌾 Rice
 
-          }
+              </option>
 
-        </button>
+              <option value="Wheat">
+
+                🌾 Wheat
+
+              </option>
+
+              <option value="Maize">
+
+                🌽 Maize
+
+              </option>
+
+              <option value="Cotton">
+
+                ☁ Cotton
+
+              </option>
+
+              <option value="Sugarcane">
+
+                🎋 Sugarcane
+
+              </option>
+
+              <option value="Tomato">
+
+                🍅 Tomato
+
+              </option>
+
+              <option value="Potato">
+
+                🥔 Potato
+
+              </option>
+
+              <option value="Onion">
+
+                🧅 Onion
+
+              </option>
+
+              <option value="Banana">
+
+                🍌 Banana
+
+              </option>
+
+            </select>
+
+          </div>
+
+          {/* =======================================
+              State
+          ======================================= */}
+
+          <div>
+
+            <label className="mb-2 flex items-center gap-2 font-semibold text-gray-700">
+
+              <FiMapPin className="text-green-600" />
+
+              State
+
+            </label>
+
+            <select
+
+              name="state"
+
+              value={formData.state}
+
+              onChange={handleChange}
+
+              className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 shadow-sm transition-all duration-300 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100"
+
+            >
+
+              <option value="">
+
+                Select State
+
+              </option>
+
+              {states.map((state) => (
+
+                <option
+
+                  key={state}
+
+                  value={state}
+
+                >
+
+                  {state}
+
+                </option>
+
+              ))}
+
+            </select>
+
+          </div>
+
+          {/* =======================================
+              District
+          ======================================= */}
+
+          <div>
+
+            <label className="mb-2 flex items-center gap-2 font-semibold text-gray-700">
+
+              <FiMapPin className="text-green-600" />
+
+              District
+
+            </label>
+
+            <select
+
+              name="district"
+
+              value={formData.district}
+
+              onChange={handleChange}
+
+              className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 shadow-sm transition-all duration-300 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100"
+
+            >
+
+              <option value="">
+
+                Select District
+
+              </option>
+
+              {districts.map((district) => (
+
+                <option
+
+                  key={district}
+
+                  value={district}
+
+                >
+
+                  {district}
+
+                </option>
+
+              ))}
+
+            </select>
+
+          </div>
+
+          {/* =======================================
+              Quantity
+          ======================================= */}
+
+          <div>
+
+            <label className="mb-2 flex items-center gap-2 font-semibold text-gray-700">
+
+              <FiPackage className="text-green-600" />
+
+              Quantity (Quintals)
+
+            </label>
+
+            <input
+
+              type="number"
+
+              min="1"
+
+              name="quantity"
+
+              value={formData.quantity}
+
+              onChange={handleChange}
+
+              placeholder="Example: 50"
+
+              className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 shadow-sm transition-all duration-300 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100"
+
+            />
+
+          </div>
+                    {/* =======================================
+              Selling Time
+          ======================================= */}
+
+          <div>
+
+            <label className="mb-2 flex items-center gap-2 font-semibold text-gray-700">
+
+              <FiCalendar className="text-green-600" />
+
+              Expected Selling Time
+
+            </label>
+
+            <select
+
+              name="sellingTime"
+
+              value={formData.sellingTime}
+
+              onChange={handleChange}
+
+              className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 shadow-sm transition-all duration-300 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100"
+
+            >
+
+              <option value="">
+
+                Select Selling Time
+
+              </option>
+
+              <option value="Today">
+
+                📅 Today
+
+              </option>
+
+              <option value="Tomorrow">
+
+                🌤 Tomorrow
+
+              </option>
+
+              <option value="Next Week">
+
+                📆 Next Week
+
+              </option>
+
+              <option value="Next Month">
+
+                🗓 Next Month
+
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+        {/* =======================================
+            AI Intelligence
+        ======================================= */}
+
+        <div className="mt-10">
+
+          <h3 className="mb-6 text-2xl font-bold text-gray-800">
+
+            🤖 AI Smart Market Intelligence
+
+          </h3>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+
+            <div className="rounded-2xl border border-green-100 bg-green-50 p-5 shadow-sm transition hover:shadow-lg">
+
+              <div className="mb-3 text-4xl">
+
+                📈
+
+              </div>
+
+              <h4 className="font-bold text-green-700">
+
+                Price Prediction
+
+              </h4>
+
+              <p className="mt-2 text-sm leading-6 text-gray-600">
+
+                Predicts future crop prices using
+                historical market trends and AI.
+
+              </p>
+
+            </div>
+
+            <div className="rounded-2xl border border-blue-100 bg-blue-50 p-5 shadow-sm transition hover:shadow-lg">
+
+              <div className="mb-3 text-4xl">
+
+                💰
+
+              </div>
+
+              <h4 className="font-bold text-blue-700">
+
+                Profit Forecast
+
+              </h4>
+
+              <p className="mt-2 text-sm leading-6 text-gray-600">
+
+                Estimates expected profit before
+                selling your crops.
+
+              </p>
+
+            </div>
+
+            <div className="rounded-2xl border border-purple-100 bg-purple-50 p-5 shadow-sm transition hover:shadow-lg">
+
+              <div className="mb-3 text-4xl">
+
+                📊
+
+              </div>
+
+              <h4 className="font-bold text-purple-700">
+
+                Market Trend
+
+              </h4>
+
+              <p className="mt-2 text-sm leading-6 text-gray-600">
+
+                Understand whether prices are
+                increasing or decreasing.
+
+              </p>
+
+            </div>
+
+            <div className="rounded-2xl border border-yellow-100 bg-yellow-50 p-5 shadow-sm transition hover:shadow-lg">
+
+              <div className="mb-3 text-4xl">
+
+                🌦
+
+              </div>
+
+              <h4 className="font-bold text-yellow-700">
+
+                Weather Impact
+
+              </h4>
+
+              <p className="mt-2 text-sm leading-6 text-gray-600">
+
+                Weather conditions affecting crop
+                prices and demand.
+
+              </p>
+
+            </div>
+
+            <div className="rounded-2xl border border-red-100 bg-red-50 p-5 shadow-sm transition hover:shadow-lg">
+
+              <div className="mb-3 text-4xl">
+
+                🎯
+
+              </div>
+
+              <h4 className="font-bold text-red-700">
+
+                AI Recommendation
+
+              </h4>
+
+              <p className="mt-2 text-sm leading-6 text-gray-600">
+
+                AI recommends whether you should
+                Sell Now or Wait.
+
+              </p>
+
+            </div>
+
+            <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-5 shadow-sm transition hover:shadow-lg">
+
+              <div className="mb-3 text-4xl">
+
+                ⚡
+
+              </div>
+
+              <h4 className="font-bold text-emerald-700">
+
+                Confidence Score
+
+              </h4>
+
+              <p className="mt-2 text-sm leading-6 text-gray-600">
+
+                Displays AI confidence based on
+                available market data.
+
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* =======================================
+            AI Tips
+        ======================================= */}
+
+        <div className="mt-10 rounded-3xl border border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 p-8">
+
+          <div className="flex items-start gap-4">
+
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-green-600 text-3xl text-white">
+
+              💡
+
+            </div>
+
+            <div>
+
+              <h3 className="text-2xl font-bold text-green-700">
+
+                AI Market Tips
+
+              </h3>
+
+              <p className="mt-3 leading-7 text-gray-700">
+
+                AI recommendations are generated
+                using historical market prices,
+                seasonal demand, weather patterns,
+                regional production, transportation
+                costs and supply chain analysis.
+
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+                {/* =======================================
+            AI Prediction Button
+        ======================================= */}
+
+        <div className="mt-10">
+
+          <button
+
+            type="button"
+
+            onClick={analyzeMarket}
+
+            disabled={loading}
+
+            className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-green-600 via-green-500 to-emerald-500 py-5 text-lg font-bold text-white shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-70"
+
+          >
+
+            <span className="absolute inset-0 bg-white/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+            <span className="relative flex items-center justify-center gap-3">
+
+              {loading ? (
+
+                <>
+
+                  <svg
+
+                    className="h-6 w-6 animate-spin"
+
+                    xmlns="http://www.w3.org/2000/svg"
+
+                    fill="none"
+
+                    viewBox="0 0 24 24"
+
+                  >
+
+                    <circle
+
+                      className="opacity-25"
+
+                      cx="12"
+
+                      cy="12"
+
+                      r="10"
+
+                      stroke="currentColor"
+
+                      strokeWidth="4"
+
+                    />
+
+                    <path
+
+                      className="opacity-75"
+
+                      fill="currentColor"
+
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+
+                    />
+
+                  </svg>
+
+                  AI is analyzing the market...
+
+                </>
+
+              ) : (
+
+                <>
+
+                  🚀 Generate AI Prediction
+
+                </>
+
+              )}
+
+            </span>
+
+          </button>
+
+        </div>
+
+        {/* =======================================
+            AI Notice
+        ======================================= */}
+
+        <div className="mt-8 rounded-2xl border border-green-200 bg-green-50 p-6">
+
+          <div className="flex items-start gap-4">
+
+            <div className="text-3xl">
+
+              🤖
+
+            </div>
+
+            <div>
+
+              <h3 className="text-xl font-bold text-green-700">
+
+                AI Prediction Notice
+
+              </h3>
+
+              <p className="mt-2 leading-7 text-gray-700">
+
+                Predictions are generated using machine learning,
+
+                historical mandi prices, seasonal demand,
+
+                weather conditions and regional market trends.
+
+                The recommendation is intended to support
+
+                your decision and should be combined with
+
+                current local market conditions.
+
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
 
       </div>
 
@@ -316,5 +843,3 @@ function MarketForm({
   );
 
 }
-
-export default MarketForm;

@@ -1,0 +1,27 @@
+{
+  "dashboard": "Dashboard",
+  "cropRecommendation": "Crop Recommendation",
+  "diseaseDetection": "Disease Detection",
+  "weather": "Weather",
+  "smartIrrigation": "Smart Irrigation",
+  "fertilizerRecommendation": "Fertilizer Recommendation",
+  "marketPrediction": "Market Prediction",
+  "chatbot": "AI Chatbot",
+  "news": "News",
+  "schemes": "Schemes",
+  "profile": "Profile",
+  "settings": "Settings",
+  "logout": "Logout",
+
+  "home": "Home",
+  "login": "Login",
+  "register": "Register",
+
+  "submit": "Submit",
+  "cancel": "Cancel",
+  "save": "Save",
+  "search": "Search",
+
+  "english": "English",
+  "kannada": "Kannada"
+}
