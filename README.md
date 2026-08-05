@@ -453,7 +453,7 @@ MAIL_PASSWORD=YOUR_APP_PASSWORD
 
 
 
-**Basavaraj Channappanor**
+**Basavaraj**
 
 
 
