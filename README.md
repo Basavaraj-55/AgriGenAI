@@ -12,9 +12,6 @@
 
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-AI-orange)
 
-![License](https://img.shields.io/badge/License-MIT-red)
-
-
 
 ## 📌 Overview
 
