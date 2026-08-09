@@ -1,13 +1,12 @@
 # ==========================================================
-# 🌾 AgriGenAI Gemini AI Utility
-# backend/utils/gemini.py
+# 🌾 AgriGenAI - Gemini AI Utility
+# File: backend/utils/gemini.py
 # ==========================================================
 
 import os
 
-import google.generativeai as genai
-
 from dotenv import load_dotenv
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 
 # ==========================================================
@@ -16,28 +15,21 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
-# ==========================================================
-# Configure Gemini API
-# ==========================================================
-
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not GEMINI_API_KEY:
-    raise Exception("❌ GEMINI_API_KEY not found in .env")
-
-
-genai.configure(
-    api_key=GEMINI_API_KEY
-)
+    raise RuntimeError(
+        "❌ GEMINI_API_KEY not found in .env"
+    )
 
 
 # ==========================================================
-# Load Gemini Model
+# Initialize Gemini Model
 # ==========================================================
 
-model = genai.GenerativeModel(
-    "gemini-2.5-flash"
+model = ChatGoogleGenerativeAI(
+    model="gemini-3.6-flash",
+    google_api_key=GEMINI_API_KEY,
 )
 
 print("✅ Gemini AI Loaded Successfully")
@@ -49,117 +41,135 @@ print("✅ Gemini AI Loaded Successfully")
 
 def ask_gemini(
     question: str,
-    context: str = None
-):
+    context: str | None = None
+) -> str:
 
     try:
 
         # ==================================================
-        # RAG + Gemini Prompt
+        # RAG Prompt
         # ==================================================
 
         if context and context.strip():
 
             prompt = f"""
-You are AgriGenAI.
+You are AgriGenAI, an intelligent AI assistant for farmers.
 
-You are an intelligent AI assistant for farmers.
+Use the Agriculture Knowledge Base below as your first source
+of information.
 
-Your first priority is to use the Agriculture Knowledge Base provided below.
-
---------------------------------------------------
-
-AGRICULTURE KNOWLEDGE BASE
+---------------- Agriculture Knowledge Base ----------------
 
 {context}
 
---------------------------------------------------
-
-USER QUESTION
+---------------- User Question ----------------
 
 {question}
 
---------------------------------------------------
+Instructions:
 
-Instructions
+1. Carefully read the Agriculture Knowledge Base.
 
-1. Read the Agriculture Knowledge Base carefully.
+2. If the answer is available in the Knowledge Base,
+   use that information.
 
-2. If the answer exists in the Agriculture Knowledge Base, answer using that information.
+3. If the Knowledge Base does not contain enough information,
+   you may use your general knowledge.
 
-3. If the Agriculture Knowledge Base does not contain enough information, answer using your own knowledge.
+4. Clearly mention when important information comes
+   from general knowledge.
 
-4. Clearly mention if part of your answer is based on your general knowledge.
+5. Use simple and easy-to-understand English.
 
-5. Never refuse to answer only because the context is missing.
+6. Give practical and step-by-step guidance whenever possible.
 
-6. Use simple English.
+7. For agriculture questions, provide useful farming tips
+   when appropriate.
 
-7. Give practical and step-by-step guidance whenever possible.
+8. If the question is unrelated to agriculture,
+   answer it normally.
 
-8. For agriculture questions include useful tips whenever appropriate.
-
-9. If the question is unrelated to agriculture (programming, AI, interviews, education, science, etc.), answer it normally.
-
-10. Be accurate and helpful.
-
---------------------------------------------------
-
-ANSWER
-
+9. Be accurate, helpful, and concise.
 """
 
         # ==================================================
-        # General Chat
+        # General Chat Prompt
         # ==================================================
 
         else:
 
             prompt = f"""
-You are AgriGenAI.
+You are AgriGenAI, a helpful and intelligent AI assistant.
 
-You are a helpful AI assistant.
+You can answer questions about:
 
-You can answer:
+- Agriculture
+- Programming
+- Artificial Intelligence
+- Machine Learning
+- Python
+- Java
+- JavaScript
+- React
+- Flask
+- Interviews
+- Education
+- Weather
+- General Knowledge
 
-• Agriculture
-• Programming
-• Artificial Intelligence
-• Machine Learning
-• Java
-• Python
-• JavaScript
-• React
-• Flask
-• Interviews
-• Education
-• Weather
-• General Knowledge
+Always provide clear, accurate, and easy-to-understand answers.
 
-Always provide clear, accurate and easy-to-understand answers.
-
-QUESTION
+User Question:
 
 {question}
-
-ANSWER
-
 """
+
 
         # ==================================================
         # Generate Response
         # ==================================================
 
-        response = model.generate_content(prompt)
+        response = model.invoke(prompt)
 
-        if hasattr(response, "text") and response.text:
-            return response.text.strip()
+
+        # ==================================================
+        # Extract Response
+        # ==================================================
+
+        if response and hasattr(response, "content"):
+
+            content = response.content
+
+            if isinstance(content, str):
+                return content.strip()
+
+            if isinstance(content, list):
+
+                text_parts = []
+
+                for item in content:
+
+                    if isinstance(item, dict):
+
+                        text = item.get("text")
+
+                        if text:
+                            text_parts.append(text)
+
+                if text_parts:
+                    return "\n".join(text_parts).strip()
+
 
         return "Sorry, I couldn't generate a response."
 
+
+    # ======================================================
+    # Error Handling
+    # ======================================================
+
     except Exception as error:
 
-        print("Gemini Error:", error)
+        print(f"❌ Gemini Error: {error}")
 
         return f"Gemini Error: {str(error)}"
 
@@ -176,7 +186,9 @@ if __name__ == "__main__":
 
     while True:
 
-        question = input("\nAsk Question : ")
+        question = input(
+            "\nAsk Question (type 'exit' to quit): "
+        )
 
         if question.lower() == "exit":
             break

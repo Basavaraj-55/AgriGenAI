@@ -41,7 +41,7 @@ from routes.auth import auth_bp
 from routes.chatbot import chatbot_bp
 from routes.news import news_bp
 from routes.schemes import schemes_bp
-from routes.voice import voice_bp
+
 
 from routes.products import products_bp
 from routes.cart import cart_bp
@@ -114,14 +114,6 @@ app.register_blueprint(
     url_prefix="/api"
 )
 
-# ============================================================
-# Voice Assistant Blueprint
-# ============================================================
-
-app.register_blueprint(
-    voice_bp,
-    url_prefix="/api"
-)
 
 # ============================================================
 # Marketplace Module
@@ -433,9 +425,9 @@ try:
         )
 
     potato_model = tf.keras.models.load_model(
-        POTATO_MODEL_PATH
-    )
-
+    POTATO_MODEL_PATH,
+    safe_mode=False
+)
     print("✅ Potato Disease Model Loaded")
 
     # ========================================================

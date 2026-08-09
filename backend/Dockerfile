@@ -1,94 +1,71 @@
 # ==========================================================
-# AgriGenAI Backend - Docker Requirements
+# AgriGenAI Backend - Dockerfile
 # ==========================================================
 
-# ==========================================================
-# Flask
-# ==========================================================
-
-Flask==3.1.1
-Flask-Cors==6.0.1
-Flask-Bcrypt==1.0.1
-Flask-JWT-Extended==4.7.1
-gunicorn==23.0.0
-python-dotenv==1.1.1
+FROM python:3.11-slim
 
 # ==========================================================
-# Database
+# Working Directory
 # ==========================================================
 
-pymongo==4.13.2
+WORKDIR /app
 
 # ==========================================================
-# Authentication
+# Environment Variables
 # ==========================================================
 
-PyJWT==2.10.1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV USE_TF=0
 
 # ==========================================================
-# Machine Learning
+# System Dependencies
 # ==========================================================
 
-numpy==2.1.3
-pandas==2.2.3
-scikit-learn==1.7.0
-joblib==1.5.1
-tensorflow-cpu==2.20.0
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    libgl1 \
+    libglib2.0-0 \
+    tesseract-ocr \
+    && rm -rf /var/lib/apt/lists/*
 
 # ==========================================================
-# Google Gemini
+# Python Dependencies
 # ==========================================================
 
-langchain-google-genai==2.1.8
+COPY requirements.txt .
+
+RUN pip install --upgrade pip
 
 # ==========================================================
-# LangChain
+# CPU-only PyTorch
 # ==========================================================
 
-langchain==0.3.26
-langchain-community==0.3.27
-langchain-core==0.3.72
-langchain-text-splitters==0.3.8
-langchain-huggingface==0.3.0
+RUN pip install --no-cache-dir \
+    torch \
+    --index-url https://download.pytorch.org/whl/cpu
 
 # ==========================================================
-# Embeddings & Reranking
+# Application Dependencies
 # ==========================================================
 
-sentence-transformers==3.4.1
+RUN pip install --no-cache-dir -r requirements.txt
 
 # ==========================================================
-# Vector Database
+# Copy Application
 # ==========================================================
 
-chromadb==1.5.9
-langchain-chroma==0.2.5
+COPY . .
 
 # ==========================================================
-# PDF Processing
+# Port
 # ==========================================================
 
-pypdf==5.7.0
-pymupdf==1.26.3
+EXPOSE 5000
 
 # ==========================================================
-# Image Processing
+# Start Application
 # ==========================================================
 
-Pillow==11.3.0
-opencv-python-headless==4.12.0.88
-pytesseract==0.3.13
-
-# ==========================================================
-# HTTP & RSS
-# ==========================================================
-
-requests==2.32.4
-feedparser==6.0.11
-
-# ==========================================================
-# Utilities
-# ==========================================================
-
-tqdm==4.67.1
-rich==14.0.0
+CMD ["gunicorn", "--workers=1", "--threads=2", "--timeout=120", "--bind=0.0.0.0:5000", "app:app"]
