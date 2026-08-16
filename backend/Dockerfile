@@ -1,5 +1,5 @@
 # ==========================================================
-# AgriGenAI Backend - Dockerfile
+# 🌾 AgriGenAI Backend - Dockerfile
 # ==========================================================
 
 FROM python:3.11-slim
@@ -68,4 +68,4 @@ EXPOSE 5000
 # Start Application
 # ==========================================================
 
-CMD ["gunicorn", "--workers=1", "--threads=2", "--timeout=120", "--bind=0.0.0.0:5000", "app:app"]
+CMD ["sh", "-c", "gunicorn --workers=1 --threads=2 --timeout=120 --bind=0.0.0.0:${PORT} app:app"]
